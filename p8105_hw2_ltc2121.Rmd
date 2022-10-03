@@ -1,0 +1,75 @@
+---
+title: "p8105_hw2_ltc2121"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Problem 1
+
+```{r}
+nyc_subway = read_csv("hw2_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",
+  col_types = cols(Route8 = "c", Route9 = "c", Route10 = "c", Route11 = "c")) %>% 
+  janitor::clean_names() %>% 
+  select(line, station_name, station_latitude, station_longitude, 
+    starts_with("route"), entry, exit_only, vending, entrance_type, 
+    ada) %>% 
+  mutate(entry = ifelse(entry == "YES", TRUE, FALSE))
+```
+
+The variables in the dataset are `r names(nyc_subway)`. The data has `r nrow(nyc_subway)` rows and `r ncol(nyc_subway)` columns.Since the data has been imported and selected for the variables of interest. The names have been standardized with the janitor clean names function. The variable type has also be changes for several of the variables. Overall the data is not completely tidy because it is in a wide format. To convert to a longer dataframe, route could be one variable with the route number as the value. 
+
+```{r}
+nyc_subway %>% 
+  select(station_name, line) %>% 
+  distinct
+```
+
+There are 465 distinct stations. 
+
+```{r}
+nyc_subway %>% 
+  filter(ada == TRUE) %>% 
+  select(station_name, line) %>% 
+  distinct
+```
+
+There are 84 subway stations that are ADA comliant. 
+
+```{r}
+nyc_subway %>% 
+  filter(vending == "NO") %>% 
+  pull(entry) %>% 
+  mean
+```
+
+The proportion of station entrances / exits without vending that allow entrance are 0.377. 
+
+```{r}
+nyc_subway %>% 
+  pivot_longer(
+    route1:route11, 
+    names_to = "route_num", 
+    values_to = "route") %>% 
+    filter(route == "A") %>% 
+  select(station_name, line) %>% 
+  distinct
+
+nyc_subway %>% 
+   pivot_longer(
+    route1:route11,
+    names_to = "route_num",
+    values_to = "route") %>% 
+  filter(route == "A", ada == TRUE) %>% 
+  select(station_name, line) %>% 
+  distinct
+```
+
+There are 60 distinct stations serve the A train and of those stations only 17 are ADA compliant. 
+
+## Problem 2
+
+
