@@ -86,10 +86,8 @@ trash_wheel = read_excel("hw2_data/Trash Wheel Collection Data.xlsx",
   janitor::clean_names() %>% 
   filter(!is.na(dumpster)) %>% 
   mutate(sports_balls = round(sports_balls),
-         wheel_num = "1")
-
-trash_wheel$year = as.numeric(trash_wheel$year)
-
+         wheel_num = "1", 
+         year = as.numeric(year))
 
 pro_trash_wheel = read_excel("hw2_data/Trash Wheel Collection Data.xlsx", 
                          sheet = "Professor Trash Wheel") %>% 
@@ -117,10 +115,34 @@ The variables in the dataframe with both Mr. Trash Wheel and Professor Trash Whe
 
 ## Problem 3
 
+Tidy of the pols_month data 
+
 ```{r}
+pols_month = read_csv("hw2_data/pols-month.csv") %>% 
+  separate(col = mon, into = c("year", "month", "day"), sep = "-") %>% 
+  mutate(month = as.numeric(month), 
+         month = month.name[month], 
+         prez_gop = if_else(prez_gop > 0, "gop", NA_character_), 
+         prez_dem = if_else(prez_dem > 0, "dem", NA_character_)) %>% 
+   pivot_longer(
+    c(prez_gop, prez_dem), 
+    names_to = "rid", 
+    values_to = "president") %>%  
+  filter(!is.na(president)) %>%   
+  select(-c(rid, day))
 
 ```
 
+Tidy of the snp data 
+
+```{r}
+snp_df = read_csv("hw2_data/snp.csv") %>% 
+    separate(col = date, into = c("day", "month", "year"), sep = "/")
+
+%>% 
+  mutate(month = as.numeric(month), 
+         month = month.name[month])
+```
 
 
 
