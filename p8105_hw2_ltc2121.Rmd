@@ -11,6 +11,8 @@ library(readxl)
 
 ## Problem 1
 
+Data input 
+
 ```{r}
 nyc_subway = read_csv("hw2_data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",
   col_types = cols(Route8 = "c", Route9 = "c", Route10 = "c", Route11 = "c")) %>% 
@@ -73,14 +75,52 @@ There are 60 distinct stations serve the A train and of those stations only 17 a
 
 ## Problem 2
 
+Data input
+
 ```{r}
-trash_wheel = read_excel("hw2_data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", 
+trash_wheel = read_excel("hw2_data/Trash Wheel Collection Data.xlsx", 
                          sheet = "Mr. Trash Wheel", 
-                         range = "A2:N533") %>% 
+                         col_types = 
+                          c("guess","guess","guess","guess","guess","guess","guess","guess","guess",
+                            "guess","guess","guess","guess","guess", "skip", "skip")) %>% 
   janitor::clean_names() %>% 
-  filter(!is.na(dumpster)) 
+  filter(!is.na(dumpster)) %>% 
+  mutate(sports_balls = round(sports_balls),
+         wheel_num = "1")
+
+trash_wheel$year = as.numeric(trash_wheel$year)
 
 
+pro_trash_wheel = read_excel("hw2_data/Trash Wheel Collection Data.xlsx", 
+                         sheet = "Professor Trash Wheel") %>% 
+  janitor::clean_names() %>% 
+  filter(!is.na(dumpster)) %>% 
+  mutate(wheel_num = "2")
+
+all_trash = bind_rows(trash_wheel, pro_trash_wheel)
+
+all_trash %>% 
+  arrange(year) 
+all_trash %>% 
+  arrange(desc(year))
+
+pro_total <- all_trash %>% 
+  filter(wheel_num == "2") %>% 
+  summarise(sum(weight_tons))
+
+sballs <- trash_wheel %>% 
+  filter(year == 2020) %>% 
+      summarise(sum(sports_balls))
+```
+
+The variables in the dataframe with both Mr. Trash Wheel and Professor Trash Wheel are `r names(all_trash)`. The dataframe has a total of `r nrow(all_trash)` observations. The years that trash was collected range from 2014 to 2022. From the current data, the total amount of trash collected by Professor Trash Wheel is `r pro_total` tons. The total number of sports balls collected by Mr. Trash Wheel in 2020 was `r sballs` balls.
+
+## Problem 3
+
+```{r}
 
 ```
+
+
+
 
