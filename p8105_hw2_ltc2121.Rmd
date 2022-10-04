@@ -6,6 +6,7 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(readxl)
 ```
 
 ## Problem 1
@@ -72,4 +73,12 @@ There are 60 distinct stations serve the A train and of those stations only 17 a
 
 ## Problem 2
 
+```{r}
+trash_wheel = read_excel("hw2_data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx", 
+                         sheet = "Mr. Trash Wheel", 
+                         range = "A2:N533") %>% 
+  janitor::clean_names() %>% 
+  filter(!is.na(dumpster)) 
+
+```
 
