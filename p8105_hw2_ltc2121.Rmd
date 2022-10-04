@@ -80,5 +80,7 @@ trash_wheel = read_excel("hw2_data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",
   janitor::clean_names() %>% 
   filter(!is.na(dumpster)) 
 
+
+
 ```
 
