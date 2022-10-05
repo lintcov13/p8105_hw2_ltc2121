@@ -97,11 +97,6 @@ pro_trash_wheel = read_excel("hw2_data/Trash Wheel Collection Data.xlsx",
 
 all_trash = bind_rows(trash_wheel, pro_trash_wheel)
 
-all_trash %>% 
-  arrange(year) 
-all_trash %>% 
-  arrange(desc(year))
-
 pro_total <- all_trash %>% 
   filter(wheel_num == 2) %>% 
   summarise(sum(weight_tons))
