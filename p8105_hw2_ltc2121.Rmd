@@ -86,16 +86,16 @@ trash_wheel = read_excel("hw2_data/Trash Wheel Collection Data.xlsx",
   janitor::clean_names() %>% 
   filter(!is.na(dumpster))  %>% 
   mutate(sports_balls = round(sports_balls),
-         num = 1, 
+         wheel_num = 1, 
          year = as.numeric(year))
 
 pro_trash_wheel = read_excel("hw2_data/Trash Wheel Collection Data.xlsx", 
                          sheet = "Professor Trash Wheel") %>% 
   janitor::clean_names() %>% 
   filter(!is.na(dumpster)) %>% 
-  mutate(wheel_num = 1)
+  mutate(wheel_num = 2)
 
-all_trash = bind_rows(pro_trash_wheel, trash_wheel)
+all_trash = bind_rows(trash_wheel, pro_trash_wheel)
 
 all_trash %>% 
   arrange(year) 
@@ -111,7 +111,7 @@ sballs <- trash_wheel %>%
       summarise(sum(sports_balls))
 ```
 
-The variables in the dataframe with both Mr. Trash Wheel and Professor Trash Wheel are `r names(all_trash)`. The dataframe has a total of `r nrow(all_trash)` observations. The years that trash was collected range from 2014 to 2022. From the current data, the total amount of trash collected by Professor Trash Wheel is `r pro_total` tons. The total number of sports balls collected by Mr. Trash Wheel in 2020 was `r sballs` balls.
+The variables in the dataframe with both Mr. Trash Wheel and Professor Trash Wheel are `r names(all_trash)`. The dataframe has a total of `r nrow(all_trash)` observations. The range of years for trash collection in the total dataframe are between `r min(all_trash$year)` and `r max(all_trash$year)`. From the current data, the total amount of trash collected by Professor Trash Wheel is `r pro_total` tons. The total number of sports balls collected by Mr. Trash Wheel in 2020 was `r sballs` balls.
 
 ## Problem 3
 
@@ -168,3 +168,4 @@ pm_snp = full_join(pols_month, snp_df, by = c("year", "month"))
 full_join_3 = full_join(pm_snp, unemployment_df, by = c("year", "month"))
 ```
 
+The pols_month datafram contains `r nrow(pols_month)` observations. This dataframe has information about the number of national politicians who are democratic or republican at any given month between the years of `r min(pols_month$year)` and `r max(pols_month$year)`. I used tidy functions to make a new variable called 'president' which indicates if this position was held by a democrat or republican. Initially this was respresented with two different logic variables that were assigned to each political party. The snp dataframe contains `r nrow(snp_df)` observations and it has the variable 'close' which shows the closing values of the Standard & Poor’s stock market index (S&P). This information ranges between the years of `r min(snp_df$year)` and `r max(snp_df$year)`. The unemployment dataframe contains `r nrow(unemployment_df)` observations. Each observation is a percentage of unemployment for each month between the years of `r min(unemployment_df$year)` to `r max(unemployment_df$year)`. The combind dataframe holds all key variables noted and ranges from the years of `r min(full_join_3$year)` to `r max(full_join_3$year)`. 
