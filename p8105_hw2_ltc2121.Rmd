@@ -84,18 +84,18 @@ trash_wheel = read_excel("hw2_data/Trash Wheel Collection Data.xlsx",
                           c("guess","guess","guess","guess","guess","guess","guess","guess","guess",
                             "guess","guess","guess","guess","guess", "skip", "skip")) %>% 
   janitor::clean_names() %>% 
-  filter(!is.na(dumpster)) %>% 
+  filter(!is.na(dumpster))  %>% 
   mutate(sports_balls = round(sports_balls),
-         wheel_num = "1", 
+         num = 1, 
          year = as.numeric(year))
 
 pro_trash_wheel = read_excel("hw2_data/Trash Wheel Collection Data.xlsx", 
                          sheet = "Professor Trash Wheel") %>% 
   janitor::clean_names() %>% 
   filter(!is.na(dumpster)) %>% 
-  mutate(wheel_num = "2")
+  mutate(wheel_num = 1)
 
-all_trash = bind_rows(trash_wheel, pro_trash_wheel)
+all_trash = bind_rows(pro_trash_wheel, trash_wheel)
 
 all_trash %>% 
   arrange(year) 
@@ -103,7 +103,7 @@ all_trash %>%
   arrange(desc(year))
 
 pro_total <- all_trash %>% 
-  filter(wheel_num == "2") %>% 
+  filter(wheel_num == 2) %>% 
   summarise(sum(weight_tons))
 
 sballs <- trash_wheel %>% 
@@ -121,9 +121,10 @@ Tidy of the pols_month data
 pols_month = read_csv("hw2_data/pols-month.csv") %>% 
   separate(col = mon, into = c("year", "month", "day"), sep = "-") %>% 
   mutate(month = as.numeric(month), 
-         month = month.name[month], 
+         month = month.abb[month], 
          prez_gop = if_else(prez_gop > 0, "gop", NA_character_), 
-         prez_dem = if_else(prez_dem > 0, "dem", NA_character_)) %>% 
+         prez_dem = if_else(prez_dem > 0, "dem", NA_character_), 
+         year = as.numeric(year)) %>% 
    pivot_longer(
     c(prez_gop, prez_dem), 
     names_to = "rid", 
@@ -137,12 +138,33 @@ Tidy of the snp data
 
 ```{r}
 snp_df = read_csv("hw2_data/snp.csv") %>% 
-    separate(col = date, into = c("day", "month", "year"), sep = "/")
-
-%>% 
+  separate(col = date, into = c("month", "day", "year"), sep = "/") %>% 
+  mutate(year = as.numeric(year), 
+         year = if_else(year > 22, (year + 1900), 
+                        if_else(year <= 22, (year + 2000) , NA_real_))) %>% 
   mutate(month = as.numeric(month), 
-         month = month.name[month])
+         month = month.abb[month]) %>% 
+  select(-day) %>% 
+  select(year, month, close)
 ```
 
+Tidy of the unemployment data
 
+```{r}
+unemployment_df = read_csv("hw2_data/unemployment.csv") %>% 
+  pivot_longer(
+    Jan:Dec, 
+    names_to = "month", 
+    values_to = "perc_unemployment"
+  ) %>% 
+  janitor::clean_names()
+```
+
+Joining the Dataframes 
+
+```{r}
+pm_snp = full_join(pols_month, snp_df, by = c("year", "month"))
+
+full_join_3 = full_join(pm_snp, unemployment_df, by = c("year", "month"))
+```
 
